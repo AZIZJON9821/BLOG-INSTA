@@ -5,9 +5,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports:  [PrismaModule], // PrismaModule import qilinmaydi, chunki PrismaService to'g'ridan-to'g'ri import qilinadi
+  imports:  [PrismaModule],
   controllers: [UserController],
   providers: [UserService, PrismaService],
-  exports: [UserService], // Agar boshqa modullarda ham foydalanmoqchi bo'lsangiz, bu qatorda bo'lishi kerak
+  exports: [UserService], 
 })
 export class UserModule {}
