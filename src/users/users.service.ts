@@ -31,7 +31,11 @@ export class UserService {
     });
   }
 
-  remove(id: number) {
-    return this.prisma.user.delete({ where: { id } });
-  }
+ async remove(id: number) {
+  await this.prisma.likedPost.deleteMany({ where: { userId: id } });
+  await this.prisma.post.deleteMany({ where: { userId: id } });
+
+  return this.prisma.user.delete({ where: { id } });
+}
+
 }

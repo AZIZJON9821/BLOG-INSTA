@@ -12,9 +12,10 @@ export class CreatePostDto {
   @IsOptional()
   content: string;
 
-  @ApiProperty({ description: 'ID of the author of the post' })
+  @ApiProperty({ description: 'ID of the user who created the post' })
   @IsNumber()
   @IsPositive()
-  authorId: number;
+  userId: number; // <-- authorId emas
 }
+
 
