@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mini Instagram - Postlar</title>
+  <link rel="stylesheet" href="./css/post.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      margin: 0; padding: 0; height: 100%; overflow: hidden;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      font-family: 'Poppins', sans-serif;
+    }
+    canvas {
+      position: fixed; top: 0; left: 0; z-index: 0;
+      width: 100%; height: 100%;
+    }
+    .container {
+      position: relative; z-index: 1; height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 20px;
+    }
+    .post-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      padding: 40px 50px;
+      max-width: 1000px; width: 100%;
+      color: #333;
+      
+    }
+    .post-card h2 {
+      text-align: center; font-weight: 600; font-size: 2rem;
+      margin-bottom: 30px; color: #222;
+    }
+    form {
+      display: flex; flex-direction: column; gap: 15px;
+    }
+    input, button {
+      font-family: 'Poppins', sans-serif;
+    }
+    input[type="text"] {
+      padding: 12px 15px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 8px rgba(37, 99, 235, 0.5);
+    }
+    input[type="file"] {
+      display: none;
+    }
+label.custom-file-label {
+  display: inline-block;
+  background: linear-gradient(135deg, #4f46e5, #3b82f6, #d93609, #06d659);
+  background-size: 300% 300%;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease-in-out, box-shadow 0.3s ease;
+  animation: gradientShift 5s ease infinite;
+}
+
+label.custom-file-label:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 25px rgba(59, 130, 246, 0.5);
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+    button {
+      width: 100%;
+      background: #2563eb;
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    button:hover {
+      background: #1d4ed8;
+      transform: scale(1.05);
+    }
+    .success {
+      margin-top: 10px;
+      text-align: center;
+      color: green;
+      display: none;
+    }
+    .posts-toggle {
+      margin-top: 20px;
+      text-align: center;
+      color: #2563eb;
+      cursor: pointer;
+      font-weight: 600;
+      user-select: none;
+    }
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center; align-items: center;
+      z-index: 10;
+      
+    }
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      position: relative;
+    }
+    .modal-content h3 {
+      margin-bottom: 15px;
+    }
+    .modal-content input[type="text"] {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 12px 10px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+    .modal-content input[type="text"]:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 8px rgba(37, 99, 235, 0.5);
+    }
+    .modal-content .post {
+      margin-top: 20px;
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 12px;
+      text-align: left;
+      position: relative;
+    }
+    .modal-content img {
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 12px;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .delete-btn {
+      background: #e53935;
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+      margin-top: 15px;
+    }
+    .delete-btn:hover {
+      background: #b71c1c;
+    }
+
+
+    
+
+    .user-icon {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 60px;       /* kengligi kattaroq */
+  height: 60px;      /* balandligi o‘zgarmaydi */
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.3s, filter 0.3s;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.7));
+  line-height: 60px; /* balandlik */
+  color: #377ed6;
+  font-size: 35px;   /* emoji yoki matn kattaligi */
+  text-align: center; /* emoji markazlash uchun */
+}
+
+.user-icon:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 5px #2563eb);
+}
+
+  
+
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <div class="container">
+    <div class="post-card">
+        <h2>Post yaratish</h2>
+        <form id="postForm">
+          <input type="text" id="title" placeholder="Sarlavha" required />
+          <textarea id="content" placeholder="  Matn" required style=" resize: none; border-radius: 10px; " rows="4"></textarea>
+          <input type="text" id="userId" placeholder="User ID" required />
+          <input type="file" id="createimage" accept="image/*" required style="display: none;" />
+          <label for="createimage" class="custom-file-label">📷 Rasm tanlang</label>
+
+          <button type="submit">Joylash</button>
+        </form>
+      <p class="success" id="successMessage">✅ Post muvaffaqiyatli joylandi!</p>
+      <div class="posts-toggle" onclick="openModal()">🌇 Meni postlarim</div>
+      <!-- <div class="posts-toggle" onclick="window.location.href = 'menu.html';">🏠 Menu</div>;  -->
+        <!-- <div class="posts-toggle" onclick="openEditModal()">✏️ Postni tahrirlash</div>
+      <div class="posts-toggle" onclick="openDeleteModal()">🗑️ Postni o‘chirish</div> -->
+    </div>
+  </div>
+
+<!-- Ko'rish modal -->
+<div class="modal" id="postModal">  
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal()">×</span>
+    <h3>User ID orqali postlar</h3>
+    <input type="text" id="modalUserId" placeholder="User ID kiriting" />
+    <button onclick="loadUserPosts()">Ko‘rish</button>
+    <div id="userPostList" style="margin-top:20px; max-height: 350px; overflow-y: auto;"></div>
+  </div>
+</div>
+
+<!-- Barcha postlar -->
+<div class="modal" id="allPostModal">  
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeallpost()">×</span>
+    <h3>Barcha postlar</h3>
+    <div id="allPostList" style="margin-top:20px; max-height: 350px; overflow-y: auto;"></div>
+  </div>
+</div>
+
+
+
+
+  <!-- Tahrirlash modal -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeEditModal()">&times;</span>
+      <h3>Postni tahrirlash</h3>
+      <input type="text" id="editPostId" placeholder="Post ID kiriting" />
+      <button onclick="loadPostForEdit()">Yuklash</button>
+
+      <form id="editForm" style="margin-top: 15px; display:none;">
+        <input type="text" id="editTitle" placeholder="Yangi sarlavha" required />
+        <textarea id="editContent" placeholder="Yangi matn" required></textarea>
+        <input type="file" id="editImage" accept="image/*" style="display: none;" />
+        <button type="button"  onclick="document.getElementById('editImage').click()">Rasm tanlash</button>
+
+<button type="submit"
+  style="
+    background: linear-gradient(135deg, #28a745, #218838);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 0 12px #28a745, 0 0 24px #218838;
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.05em;
+  "
+  onmouseover="this.style.background='linear-gradient(135deg, #218838, #28a745)'; this.style.boxShadow='0 0 18px #218838, 0 0 36px #28a745'; this.style.transform='scale(1.05)';"
+  onmouseout="this.style.background='linear-gradient(135deg, #28a745, #218838)'; this.style.boxShadow='0 0 12px #28a745, 0 0 24px #218838'; this.style.transform='scale(1)';"
+  onmousedown="this.style.transform='scale(0.95)'; this.style.boxShadow='0 0 8px #218838, 0 0 16px #28a745';"
+  onmouseup="this.style.transform='scale(1.05)'; this.style.boxShadow='0 0 18px #218838, 0 0 36px #28a745';"
+>
+  Saqlash
+</button>
+      </form>
+    </div>
+  </div>
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="user-icon" title="Foydalanuvchi sahifasi" onclick="location.href='menu.html'">
+  <i class="fas fa-home"></i>
+</div>
+
+
+
+
+
+
+
+
+
+  <!-- O'chirish modal -->
+  <div class="modal" id="deleteModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeDeleteModal()">&times;</span>
+      <h3>Postni o‘chirish</h3>
+      <input type="text" id="deletePostId" placeholder="Post ID kiriting" />
+      <button onclick="loadPostForDelete()">Yuklash</button>
+
+      <div id="deletePostDetails" style="margin-top: 15px; display:none; text-align:left;">
+        <h4 id="deletePostTitle"></h4>
+        <p id="deletePostContent"></p>
+        <img id="deletePostImage" src="" alt="Post rasm" style="width:100%; border-radius:12px;" />
+        <button class="delete-btn" onclick="confirmDeletePost()">O‘chirish</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Canvas partikulalar va kometalar (ilgarigi kodni shu yerga qo'yishingiz mumkin)
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = (Math.random() - 0.5) * 0.5;
+        this.speedY = (Math.random() - 0.5) * 0.5;
+        this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+      }
+      update() {
+        this.x += this.speedX; this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+    class ShootingStar {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * canvas.width * 0.8;
+        this.y = canvas.height + 10;
+        this.len = Math.random() * 80 + 80;
+        this.speed = Math.random() * 8 + 6;
+        this.angle = Math.PI / 4;
+        this.opacity = 1;
+        this.opacityChange = 0.01;
+      }
+      update() {
+        this.x += this.speed * Math.cos(this.angle);
+        this.y -= this.speed * Math.sin(this.angle);
+        this.opacity -= this.opacityChange;
+        if (this.opacity <= 0) this.reset();
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(this.x - this.len * Math.cos(this.angle), this.y + this.len * Math.sin(this.angle));
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+    const particles = [];
+    for(let i=0; i<150; i++) particles.push(new Particle());
+    const stars = [];
+    for(let i=0; i<7; i++) stars.push(new ShootingStar());
+    function animate() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      stars.forEach(s => { s.update(); s.draw(); });
+      requestAnimationFrame(animate);
+    }
+    animate();
+    window.addEventListener('resize', resize);
+
+    // Post yaratish
+  const form = document.getElementById('postForm');
+  const successMessage = document.getElementById('successMessage');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById('title').value.trim();
+    const contant=document.getElementById("content").value.trim();
+    const userId = document.getElementById('userId').value.trim();
+    const createimage = document.getElementById('createimage').files[0];
+
+    if (!title || !userId || !createimage) return alert('Barcha maydonlarni to‘ldiring!');
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return alert('Avval tizimga kiring!');
+
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('content', document.getElementById('content').value.trim());
+      formData.append('userId', userId);
+      formData.append('image', createimage); // ⚠️ oldin bu yerda noto‘g‘ri 'file' bor edi
+
+      const res = await fetch('http://localhost:3000/posts', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+
+      if (res.ok) {
+        successMessage.style.display = 'block';
+        setTimeout(() => successMessage.style.display = 'none', 2000);
+        form.reset();
+      } else {
+        const error = await res.json();
+        alert('Xatolik: ' + (error.message || res.statusText));
+      }
+    } catch {
+      alert('Server bilan bog‘lanishda xatolik yuz berdi');
+    }
+  });
+
+  // ... (modal ochish/yopish, loadUserPosts, loadPostForEdit o‘zgarishsiz qoladi)
+
+  // 🛠 Postni tahrirlash form submit
+ document.getElementById('editForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const postId = document.getElementById('editPostId').value.trim();
+  const newTitle = document.getElementById('editTitle').value.trim();
+  const newContent = document.getElementById('editContent').value.trim();
+  const newImage = document.getElementById('editImage').files[0];
+
+  if (!postId || !newTitle) return alert('Post ID va yangi sarlavha kerak!');
+
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return alert('Avval tizimga kiring!');
+
+    const formData = new FormData();
+    formData.append('title', newTitle);
+    formData.append('content', newContent);
+    if (newImage) formData.append('image', newImage);
+
+    const res = await fetch(`http://localhost:3000/posts/${encodeURIComponent(postId)}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData
+    });
+
+    if (res.ok) {
+      alert('Post muvaffaqiyatli yangilandi!');
+      closeEditModal();
+    } else {
+      const error = await res.json();
+      alert('Xatolik: ' + (error.message || res.statusText));
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert('Server bilan bog‘lanishda xatolik yuz berdi');
+  }
+});
+
+    // Modallar ochish/ yopish
+    const postModal = document.getElementById('postModal');
+    const allPostModal = document.getElementById('allPostModal');
+    const editModal = document.getElementById('editModal');
+    const deleteModal = document.getElementById('deleteModal');
+
+    function openModal() { postModal.style.display = 'flex'; }
+    function closeModal() { postModal.style.display = 'none'; }
+
+
+function openallModal() {
+  document.getElementById("allPostModal").style.display = "flex";
+  loadAllPosts();
+}
+
+function closeallpost() {
+  document.getElementById("allPostModal").style.display = "none";
+  document.getElementById("allPostList").innerHTML = "";
+}
+
+
+    function openEditModal() { 
+      editModal.style.display = 'flex'; 
+      document.getElementById('editForm').style.display = 'none';
+      document.getElementById('editPostId').value = '';
+      document.getElementById('editTitle').value = '';
+      document.getElementById('editContent').value = '';
+      document.getElementById('editImage').value = '';
+    }
+function closeEditModal() {
+  document.getElementById('editModal').style.display = 'none';
+  document.getElementById('editForm').style.display = 'none';
+  document.getElementById('editPostId').value = '';
+  document.getElementById('editTitle').value = '';
+  document.getElementById('editContent').value = '';
+  document.getElementById('editImage').value = '';
+}
+
+    function openDeleteModal() { 
+      deleteModal.style.display = 'flex'; 
+      document.getElementById('deletePostId').value = '';
+      document.getElementById('deletePostDetails').style.display = 'none';
+      document.getElementById('deletePostTitle').innerText = '';
+      document.getElementById('deletePostContent').innerText = '';
+      document.getElementById('deletePostImage').src = '';
+    }
+    function closeDeleteModal() { deleteModal.style.display = 'none'; }
+
+    // Postlarni userId orqali yuklash
+async function loadUserPosts() {
+  const userIdInput = document.getElementById('modalUserId');
+  const userId = userIdInput.value.trim();
+  const postList = document.getElementById('userPostList'); // O'zgartirildi
+  if (!userId) return alert('User ID kiriting!');
+
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return alert('Avval tizimga kiring!');
+
+    const res = await fetch(`http://localhost:3000/posts`, {
+      method : 'GET',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!res.ok) {
+      alert('Postlarni yuklashda xatolik yuz berdi');
+      return;
+    }
+
+    const allPosts = await res.json();
+
+    // Bu yerda filter qilamiz faqat shu userga tegishli postlarni:
+    const posts = allPosts.filter(post => post.userId == userId);
+
+    if (posts.length === 0) {
+      postList.innerHTML = '<p>Postlar topilmadi</p>';
+      return;
+    }
+
+    postList.innerHTML = posts.map(post => `
+      <div class="post" style="position: relative; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
+        <h4 style="margin:0 0 5px 0;">Title: ${post.title}</h4>
+        <p style="margin:0 0 10px 0;">Content: ${post.content}</p>
+        <p style="margin:0 0 10px 0;">User ID: ${post.userId}</p>
+        <p style="margin:0 0 10px 0;">Post ID: ${post.id}</p>
+        <img src="http://localhost:3000/uploads/${post.image}" alt="${post.title}" style="width: 100%; border-radius: 12px;" />
+        <div class="post-actions">
+           <button class="posts-toggle" onclick="openEditModal()"
+  style="background:#007bff; color:#fff; border:none; padding:8px 16px; border-radius:5px; font-size:14px; cursor:pointer; margin-right:8px; transition:background 0.3s;"
+  onmouseover="this.style.background='#0056b3'" 
+  onmouseout="this.style.background='#007bff'">
+  Edit
+</button>
+
+<button class="post-toggle" onclick="openDeleteModal()"
+  style="background:#dc3545; color:#fff; border:none; padding:8px 16px; border-radius:5px; font-size:14px; cursor:pointer; transition:background 0.3s;"
+  onmouseover="this.style.background='#a71d2a'" 
+  onmouseout="this.style.background='#dc3545'">
+  Delete
+</button>
+
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    console.error(err);
+    alert('Server bilan bog‘lanishda xatolik yuz berdi');
+  }
+}
+
+
+
+ <!-- barcha postlar  -->
+async function loadAllPosts() {
+const postList = document.getElementById('allPostList');
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return alert('Avval tizimga kiring!');
+
+    const res = await fetch(`http://localhost:3000/posts`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!res.ok) {
+      alert('Postlarni yuklashda xatolik yuz berdi');
+      return;
+    }
+
+    const posts = await res.json();
+
+    if (posts.length === 0) {
+      postList.innerHTML = '<p>Hozircha hech qanday post mavjud emas</p>';
+      return;
+    }
+
+    postList.innerHTML = posts.map(post => `
+      <div class="post" style="position: relative; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
+        <h4 style="margin:0 0 5px 0;">Title: ${post.title}</h4>
+        <p style="margin:0 0 10px 0;">Content: ${post.content}</p>
+        <p style="margin:0 0 10px 0;">User ID: ${post.userId}</p>
+        <p style="margin:0 0 10px 0;">Post ID: ${post.id}</p>
+        <img src="http://localhost:3000/uploads/${post.image}" alt="${post.title}" style="width: 100%; border-radius: 12px;" />
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    console.error(err);
+    alert('Server bilan bog‘lanishda xatolik yuz berdi');
+  }
+}
+
+
+
+    // Tahrirlash uchun post yuklash
+    async function loadPostForEdit() {
+      const postId = document.getElementById('editPostId').value.trim();
+      if (!postId) return alert('Post ID kiriting!');
+
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return alert('Avval tizimga kiring!');
+
+        const res = await fetch(`http://localhost:3000/posts/${encodeURIComponent(postId)}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!res.ok) {
+          alert('Post topilmadi yoki xatolik yuz berdi');
+          return;
+        }
+
+        const post = await res.json();
+
+        document.getElementById('editTitle').value = post.title || '';
+        document.getElementById('editContent').value = post.content || '';
+        document.getElementById('editForm').style.display = 'block';
+
+      } catch (err) {
+        console.error(err);
+        alert('Server bilan bog‘lanishda xatolik yuz berdi');
+      }
+    }
+
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const postId = document.getElementById('editPostId').value.trim();
+      const newTitle = document.getElementById('editTitle').value.trim();
+      const newContent = document.getElementById('editContent').value.trim();
+      const newImage = document.getElementById('editImage').files[0];
+
+      if (!postId || !newTitle) return alert('Post ID va yangi sarlavha kerak!');
+
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return alert('Avval tizimga kiring!');
+
+        const formData = new FormData();
+        formData.append('title', newTitle);
+        if (newImage) formData.append('image', newImage);
+
+        const res = await fetch(`http://localhost:3000/posts/${encodeURIComponent(postId)}`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+
+        if (res.ok) {
+          alert('Post muvaffaqiyatli yangilandi!');
+          closeEditModal();
+        } else {
+          const error = await res.json();
+          alert('Xatolik: ' + (error.message || res.statusText));
+        }
+
+      } catch (err) {
+        console.error(err);
+        alert('Server bilan bog‘lanishda xatolik yuz berdi');
+      }
+    });
+
+    // O'chirish uchun post yuklash
+    async function loadPostForDelete() {
+      const postId = document.getElementById('deletePostId').value.trim();
+      if (!postId) return alert('Post ID kiriting!');
+
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return alert('Avval tizimga kiring!');
+
+        const res = await fetch(`http://localhost:3000/posts/${encodeURIComponent(postId)}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!res.ok) {
+          alert('Post topilmadi yoki xatolik yuz berdi');
+          return;
+        }
+
+        const post = await res.json();
+
+        document.getElementById('deletePostTitle').innerText = post.title || '';
+        document.getElementById('deletePostContent').innerText = post.content || '';
+        document.getElementById('deletePostImage').src = `http://localhost:3000/uploads/${post.image}`;
+        document.getElementById('deletePostDetails').style.display = 'block';
+
+      } catch (err) {
+        console.error(err);
+        alert('Server bilan bog‘lanishda xatolik yuz berdi');
+      }
+    }
+
+    // O'chirishni tasdiqlash
+    async function confirmDeletePost() {
+      const postId = document.getElementById('deletePostId').value.trim();
+      if (!postId) return alert('Post ID kiriting!');
+
+      if (!confirm('Postni o‘chirilsinmi?')) return;
+
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return alert('Avval tizimga kiring!');
+
+        const res = await fetch(`http://localhost:3000/posts/${encodeURIComponent(postId)}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` } 
+        });
+
+        if (res.ok) {
+          alert('Post o‘chirildi!');
+          closeDeleteModal();
+        } else {
+          const error = await res.json();
+          alert('Xatolik: ' + (error.message || res.statusText));
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Server bilan bog‘lanishda xatolik yuz berdi');
+      }
+    }
+
+    document.querySelector('.custom-file-label').addEventListener('click', () => {
+      document.getElementById('image').click();
+    });
+  </script>
+</body>
+</html>

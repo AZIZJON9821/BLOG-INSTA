@@ -12,20 +12,42 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Role {
+  USER    
+  ADMIN 
+
+}
+
 model User {
   id         Int         @id @default(autoincrement())
   name       String
+  email      String      @unique
+  password   String
   posts      Post[]
+  role       Role         
+  image      String?
   likedPosts LikedPost[]
+  comments   Comment[]
+  savedPosts PostSave[]
+  repostuser Report[]
+  verificationCode String? // <--- bu yangi maydon
+
 }
+
 
 model Post {
   id      Int    @id @default(autoincrement())
   title   String
+  content   String
+  image   String?
   userId  Int
-  user    User   @relation(fields: [userId], references: [id]) // <--- relation nomi `user`
-
+  user    User   @relation(fields: [userId], references: [id]) 
   likedBy LikedPost[]
+  comments Comment[]
+  createdAt DateTime @default(now())
+  savedBy   PostSave[]
+  reportpost Report[]
 }
 
 model LikedPost {
@@ -39,4 +61,31 @@ model LikedPost {
   @@unique([userId, postId])
 }
 
+model Comment {
+  id      Int    @id @default(autoincrement())
+  content String
+  postId  Int
+  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId  Int
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([postId, userId])
+}
 
+model PostSave {
+  id      Int     @id @default(autoincrement())
+  postId  Int
+  userId  Int
+  user    User    @relation(fields: [userId], references: [id])
+  post    Post    @relation(fields: [postId], references: [id])
+  @@unique([postId, userId])
+}
+
+model Report {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  postId     Int?
+  post       Post?    @relation(fields: [postId], references: [id])
+  reason     String
+  createdAt  DateTime @default(now())
+}

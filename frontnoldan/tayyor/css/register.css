@@ -1,0 +1,133 @@
+/* Reset va umumiy sozlamalar */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #fceabb, #f8b500);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #333;
+}
+
+/* Register konteyner */
+.register-wrapper {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+}
+
+/* Kartochka dizayni */
+.register-card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+  padding: 50px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  position: relative;
+}
+
+/* Sarlavha */
+.register-card h2 {
+  text-align: center;
+  font-size: 2.2rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.register-card h2::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 4px;
+  background: linear-gradient(90deg, #f8b500, #fceabb);
+  border-radius: 5px;
+}
+
+/* Forma inputlar */
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #444;
+}
+
+.input-group input,
+.input-group select {
+  padding: 14px 16px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 1rem;
+  background-color: #f9f9f9;
+  transition: 0.3s ease;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  outline: none;
+  border-color: #f8b500;
+  box-shadow: 0 0 10px rgba(248, 181, 0, 0.2);
+}
+
+/* Button */
+#register-form button {
+  background: linear-gradient(90deg, #f8b500, #fceabb);
+  color: #2c3e50;
+  font-weight: 600;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+#register-form button:hover {
+  background: linear-gradient(90deg, #e2a700, #ffe07a);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(248, 181, 0, 0.3);
+}
+
+/* Kirishga o'tish */
+.redirect-text {
+  text-align: center;
+  font-size: 0.95rem;
+  margin-top: 15px;
+}
+
+.redirect-text a {
+  color: #f8b500;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.redirect-text a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .register-card {
+    padding: 35px 25px;
+  }
+
+  .register-card h2 {
+    font-size: 1.8rem;
+  }
+}

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jozibador Sahifa</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      text-align: center;
+      color: white;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .post-container {
+      max-width: 600px;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .post {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+      text-align: left;
+    }
+
+    .post:hover {
+      transform: translateY(-5px);
+    }
+
+    .btn {
+      background-color: #2563eb;
+      padding: 12px 24px;
+      border-radius: 9999px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #1d4ed8;
+      transform: scale(1.05);
+    }
+
+    .post img {
+      width: 100%;
+      border-radius: 12px;
+      margin-top: 12px;
+    }
+
+    /* User icon uchun style */
+    .user-icon {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      z-index: 10;
+      transition: transform 0.3s, filter 0.3s;
+      filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.7));
+    }
+
+    .user-icon:hover {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 5px #2563eb);
+    }
+
+    /* Plus icon uchun style */
+    .plus-icon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 48px;
+      height: 48px;
+      background-color: #2563eb;
+      color: white;
+      font-size: 36px;
+      font-weight: bold;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.7);
+      transition: transform 0.3s, background-color 0.3s, box-shadow 0.3s;
+      user-select: none;
+    }
+
+    .plus-icon:hover {
+      background-color: #1d4ed8;
+      transform: scale(1.1);
+      box-shadow: 0 6px 15px rgba(29, 78, 216, 0.9);}
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+
+  <!-- User icon -->
+  <div class="user-icon" title="Foydalanuvchi sahifasi" onclick="location.href='user.html'">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" stroke="none" >
+      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+    </svg>
+  </div>
+
+  <!-- Plus icon -->
+  <div class="plus-icon" title="Yangi post qo'shish" onclick="location.href='post.html'">
+    +
+  </div>
+
+  <div class="content">
+    <h1 class="text-4xl font-bold mb-6">Mini Instagram</h1>
+    <div class="post-container" id="postContainer">
+      <!-- Postlar bu yerga dinamik ravishda qo'shiladi -->
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+    
+    const particles = [];
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 4 + 1;
+        this.speedX = (Math.random() - 0.5) * 1;
+        this.speedY = (Math.random() - 0.5) * 1;
+        this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+          this.reset();
+        }
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 100; i++) {
+      particles.push(new Particle());
+    }
+
+    class ShootingStar {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width * 0.8;
+        this.y = canvas.height + 10;
+        this.len = Math.random() * 80 + 80;
+        this.speed = Math.random() * 8 + 6;
+        this.angle = Math.PI / 4;
+        this.opacity = 1;
+        this.opacityChange = 0.01;
+      }
+
+      update() {
+        this.x += this.speed * Math.cos(this.angle);
+        this.y -= this.speed * Math.sin(this.angle);
+        this.opacity -= this.opacityChange;
+
+        if (this.opacity <= 0) {
+          this.reset();
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(this.x - this.len * Math.cos(this.angle), this.y + this.len * Math.sin(this.angle));
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    const shootingStars = [];
+    for (let i = 0; i < 3; i++) {
+      shootingStars.push(new ShootingStar());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (const p of particles) {
+        p.update();
+        p.draw();
+      }
+
+      for (const star of shootingStars) {
+        star.update();
+        star.draw();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    setInterval(() => {
+      if (shootingStars.length < 5) {
+        shootingStars.push(new ShootingStar());
+      }
+    }, 1500);
+
+    window.addEventListener('resize', () => {
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+    });
+
+    // Postlarni API orqali olish
+    async function getAllPosts() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          alert('Avval tizimga kiring!');
+          return;
+        }
+
+        const res = await fetch(`http://localhost:3000/posts`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!res.ok) {
+          throw new Error(`API xatosi: ${res.status} ${res.statusText}`);
+        }
+
+        const posts = await res.json();
+        displayPosts(posts.slice().reverse());
+      } catch (error) {
+        console.error('Xatolik:', error);
+        const postContainer = document.getElementById('postContainer');
+        postContainer.innerHTML = '<p class="text-red-500">Postlarni yuklashda xatolik yuz berdi.</p>';
+      }
+    }
+
+  function displayPosts(posts) {
+  const postContainer = document.getElementById('postContainer');
+  postContainer.innerHTML = '';
+
+  // Agar style hali qo‘shilmagan bo‘lsa — qo‘shiladi
+  if (!document.getElementById('postStyles')) {
+    const style = document.createElement('style');
+    style.id = 'postStyles';
+    style.innerHTML = `
+      .post-card {
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 16px;
+        background-color: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease-in-out;
+      }
+
+      .post-card:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        transform: scale(1.02);
+      }
+
+      .post-content {
+        font-size: 20px;
+        font-weight: 500;
+        color: #ffffff;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+      }
+
+      .post-info {
+        font-size: 14px;
+        font-weight: 400;
+        color: #d1d5db;
+        margin: 4px 0;
+      }
+
+      .post-info span {
+        color: #f3f4f6;
+        font-weight: 600;
+      }
+
+      .post-card img {
+        max-width: 100%;
+        margin-top: 12px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+      }
+
+      body {
+        background-color: #111827;
+        font-family: 'Segoe UI', sans-serif;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  posts.forEach(post => {
+    const postElement = document.createElement('div');
+    postElement.className = 'post';
+
+postElement.innerHTML = `
+<div class="post-card" style="position: relative; background-color: transparent; padding: 20px; border-radius: 10px; box-shadow: none;">
+  
+  ${
+    post.user?.image
+    ? `
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+      <img src="http://localhost:3000/uploads/${post.user.image}" alt="${post.user.name}" 
+      style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd;">
+      <span style="
+      font-weight: bold;
+      font-size: 30px;
+      height: 50px;
+      line-height: 50px;
+      font-family: 'Times New Roman', Times, serif;
+      display: inline-block;
+      ">${post.user?.name || 'Noma\'lum'}</span>
+    </div>`
+    : `<p style="margin-bottom: 10px;">👤 Foydalanuvchi: <span>${post.user?.name || 'Noma\'lum'}</span></p>`
+    }
+    
+    
+    <h2 style="font-family: 'Times New Roman', Times, serif;margin-bottom: 10px;" class="text-xl font-semibold mb-2">${post.title || 'Sarlavha yo\'q'}</h2>
+    <p class="post-content" style="margin-bottom: 10px;font-family: 'Times New Roman', Times, serif;">${post.content || 'Matn yo\'q'}</p>
+    <p class="post-info" style="margin-bottom: 5px;font-family: 'Times New Roman', Times, serif;">👤 UserID: <span>${post.userId || 'Noma\'lum'}</span></p>
+    <p class="post-info" style="margin-bottom: 5px;font-family: 'Times New Roman', Times, serif;">🆔 PostID: <span>${post.id || 'Noma\'lum'}</span></p>
+    <p class="post-info" style="margin-bottom: 5px;font-family: 'Times New Roman', Times, serif;">📅 Sana: <span>${post.createdAt || 'Noma\'lum'}</span></p>
+
+    ${
+      post.image
+        ? `<img src="http://localhost:3000/uploads/${post.image}" alt="${post.title}" style="max-width: 100%; margin-top: 10px; border-radius: 8px;">`
+        : ''
+    }
+  </div>
+`;
+
+    postContainer.appendChild(postElement);
+  });
+}
+
+
+    // Sahifa yuklanganda postlarni olish
+    document.addEventListener('DOMContentLoaded', getAllPosts);
+  </script>
+</body>
+</html>
+
+

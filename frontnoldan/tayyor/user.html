@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Profile</title>
+    <link rel="stylesheet" href="./css/user.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+           background: rgba(167, 156, 245, 0.95);
+            margin: 0; padding: 20px;
+            color: #333;
+        }
+
+        .user-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgb(173, 201, 250);
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            padding: 30px;
+        }
+
+        .user-card h1 {
+            margin-bottom: 30px;
+            font-weight: 600;
+            text-align: center;
+            color: #1e40af;
+        }
+
+        /* Input Card */
+        .input-card {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        input[type=text], input[type=email], input[type=password] {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #6b92b7;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        input[type=text]:focus, input[type=email]:focus, input[type=password]:focus {
+            border-color: #2563eb;
+        }
+
+        button.fetch-btn, button.edit-btn, button.save-btn {
+            background: linear-gradient(135deg, #4f46e5, #3b82f6);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            color: rgb(255, 255, 255);
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+            user-select: none;
+        }
+        button.fetch-btn:hover, button.edit-btn:hover, button.save-btn:hover {
+            background: linear-gradient(135deg, #4338ca, #2563eb);
+            box-shadow: 0 6px 20px rgba(38, 56, 155, 0.6);
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: #f0f4ff;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+        }
+        .profile-image {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        .profile-info h2 {
+            margin: 0 0 10px 0;
+            font-weight: 700;
+            font-size: 26px;
+            color: #1e3a8a;
+        }
+        .profile-info p {
+            margin: 4px 0;
+            font-size: 16px;
+            color: #374151;
+        }
+
+        /* Posts List */
+        #userPostList {
+            margin-top: 40px;
+        }
+        #userPostList .post {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            transition: box-shadow 0.3s ease;
+        }
+        #userPostList .post:hover {
+            box-shadow: 0 6px 25px rgba(0,0,0,0.12);
+        }
+        #userPostList img {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-top: 10px;
+        }
+        .post-actions {
+            margin-top: 15px;
+        }
+        .post-actions button {
+            background:#007bff; color:#fff; border:none; padding:8px 16px; border-radius:5px; font-size:14px; cursor:pointer; margin-right:8px; transition:background 0.3s;
+            user-select:none;
+        }
+        .post-actions button:hover {
+            background:#0056b3;
+        }
+        .post-actions button.delete {
+            background: #dc3545;
+        }
+        .post-actions button.delete:hover {
+            background: #a71d2a;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .modal-content {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 15px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            position: relative;
+        }
+        .modal-content h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #1e40af;
+            font-weight: 600;
+        }
+        .modal-content .close {
+            position: absolute;
+            top: 12px;
+            right: 15px;
+            font-size: 25px;
+            color: #999;
+            cursor: pointer;
+            user-select:none;
+        }
+        .modal-content .close:hover {
+            color: #555;
+        }
+
+
+.post-icon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  background-color: #2563eb;
+  color: white;
+  font-size: 36px;
+  font-weight: bold;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.7);
+  transition: transform 0.3s, background-color 0.3s, box-shadow 0.3s;
+  user-select: none;
+}
+
+.post-icon:hover {
+  background-color: #1d4ed8;
+  transform: scale(1.1);
+  box-shadow: 0 6px 15px rgba(29, 78, 216, 0.9);
+}
+
+
+
+.user-icon {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 60px;       /* kengligi kattaroq */
+  height: 60px;      /* balandligi o‘zgarmaydi */
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.3s, filter 0.3s;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.7));
+  line-height: 60px; /* balandlik */
+  color: #377ed6;
+  font-size: 35px;   /* emoji yoki matn kattaligi */
+  text-align: center; /* emoji markazlash uchun */
+}
+
+.user-icon:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 5px #2563eb);
+}
+
+
+
+
+
+
+        /* Custom file label */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        label.custom-file-label {
+            display: inline-block;
+            background: linear-gradient(135deg, #4f46e5, #3b82f6, #d93609, #06d659);
+            background-size: 300% 300%;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease-in-out, box-shadow 0.3s ease;
+            animation: gradientShift 5s ease infinite;
+            user-select: none;
+        }
+        label.custom-file-label:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="user-wrapper">
+        <div class="user-card">
+            <h1>User Profile</h1>
+
+            <!-- User ID Input -->
+            <div id="userIdSection" class="input-card">
+                <h2>Enter User ID</h2>
+                <form id="userIdForm">
+                    <div class="input-group">
+                        <label for="userIdInput">User ID</label>
+                        <input type="text" id="userIdInput" name="userId" required placeholder="Enter your User ID" />
+                    </div>
+                    <button type="submit" class="fetch-btn">Fetch Profile</button>
+                </form>
+            </div>
+
+
+
+            <!-- Profile Card (Hidden Initially) -->
+            <div id="profileCard" class="profile-card" style="display: none;">
+                <div class="profile-header">
+                    <img
+                        id="userImage"
+                        src="https://via.placeholder.com/150"
+                        alt="User Image"
+                        class="profile-image"
+                    />
+                    <div class="profile-info">
+                        <h2 id="userName">Loading...</h2>
+                        <p id="userEmail">Loading...</p>
+                        <p id="userPassword">********</p>
+                    </div>
+                </div>
+                <button onclick="openEditModal()" class="edit-btn">Edit Profile</button>
+            </div>
+
+ <!-- Font Awesome CSS linkini headga qo‘shing -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="user-icon" title="Foydalanuvchi sahifasi" onclick="location.href='menu.html'">
+  <i class="fas fa-home"></i>
+</div>
+
+
+  <div class="post-icon" title="Foydalanuvchi sahifasi" onclick="location.href='post.html'">
+    +
+  </div>
+
+            <!-- User Posts Section -->
+            <section id="userPostList" style="margin-top: 40px;"></section>
+
+            <!-- Edit Modal -->
+            <div id="editModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeEditModal()">×</span>
+                    <h2>Edit Profile</h2>
+                    <form id="editForm">
+                        <div class="input-group">
+                            <label for="editName">Name</label>
+                            <input type="text" id="editName" name="name" required />
+                        </div>
+                        <div class="input-group">
+                            <label for="editEmail">Email</label>
+                            <input type="email" id="editEmail" name="email" required />
+                        </div>
+                        <div class="input-group">
+                            <label for="editPassword">Password</label>
+                            <input type="password" id="editPassword" name="password" required />
+                        </div>
+                        <div class="input-group">
+                            <input type="file" id="editImage" name="image" accept="image/*" style="display:none;" />
+                            <label for="editImage" class="custom-file-label">Upload Image</label>
+                        </div>
+                        <button type="submit" class="save-btn">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let token = localStorage.getItem('token');
+
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Display user data in profile card
+        function displayUserData() {
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('userEmail').textContent = currentUser.email;
+                document.getElementById('userImage').src =
+                    currentUser.image
+                        ? `http://localhost:3000/uploads/${currentUser.image}`
+                        : 'https://via.placeholder.com/150';
+
+                document.getElementById('profileCard').style.display = 'flex';
+                document.getElementById('userIdSection').style.display = 'none';
+
+                // After user loaded, load their posts
+                loadUserPosts();
+            }
+        }
+
+        // Fetch user by ID form submit
+        document.getElementById('userIdForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const userId = document.getElementById('userIdInput').value.trim();
+            if (!userId) {
+                alert('User ID kiriting!');
+                return;
+            }
+
+            try {
+                const res = await fetch(`http://localhost:3000/users/${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!res.ok) {
+                    throw new Error(`Error: ${res.status} - ${res.statusText}`);
+                }
+
+                currentUser = await res.json();
+                displayUserData();
+            } catch (error) {
+                alert(`Foydalanuvchini olishda xatolik: ${error.message}`);
+                localStorage.removeItem('token');
+                window.location.href = 'login.html';
+            }
+        });
+
+        async function loadUserPosts() {
+            if (!currentUser || !currentUser.id) {
+                return alert('Foydalanuvchi profili yuklanmagan!');
+            }
+
+            const userId = currentUser.id;
+            const postList = document.getElementById('userPostList');
+            if (!postList) {
+                console.warn('postList elementi topilmadi!');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return alert('Avval tizimga kiring!');
+
+                const res = await fetch(`http://localhost:3000/posts`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) {
+                    alert('Postlarni yuklashda xatolik yuz berdi');
+                    return;
+                }
+
+                const allPosts = await res.json();
+
+                const posts = allPosts.filter(post => post.userId == userId);
+
+                if (posts.length === 0) {
+                    postList.innerHTML = '<p>Postlar topilmadi</p>';
+                    return;
+                }
+
+                postList.innerHTML = posts.map(post => `
+                  <div class="post">
+                    <h4>Title: ${post.title}</h4>
+                    <p>Content: ${post.content}</p>
+                    <p>User ID: ${post.userId}</p>
+                    <p>Post ID: ${post.id}</p>
+                    <img src="http://localhost:3000/uploads/${post.image}" alt="${post.title} alt=${post.content}" />
+                   
+                  </div>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+                alert('Server bilan bog‘lanishda xatolik yuz berdi');
+            }
+        }
+    
+
+        function openEditModal() {
+            if (!currentUser) return alert('Foydalanuvchi maʼlumotlari mavjud emas!');
+            document.getElementById('editName').value = currentUser.name || '';
+            document.getElementById('editEmail').value = currentUser.email || '';
+            document.getElementById('editPassword').value = currentUser.password || '';
+            document.getElementById('editModal').style.display = 'flex';
+        }
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+    // Edit form submit handler
+ document.getElementById('editForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  if (!currentUser || !currentUser.id) {
+    return alert('Foydalanuvchi maʼlumotlari mavjud emas!');
+  }
+
+  const formData = new FormData();
+  formData.append('name', document.getElementById('editName').value.trim());
+  formData.append('email', document.getElementById('editEmail').value.trim());
+  formData.append('password', document.getElementById('editPassword').value.trim());
+
+  const imageFile = document.getElementById('editImage').files[0];
+  if (imageFile) {
+    formData.append('image', imageFile);
+  }
+
+  try {
+    const res = await fetch(`http://localhost:3000/users/${currentUser.id}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('Serverdan qaytgan xatolik:', errorText);
+      throw new Error(`Profile yangilashda xatolik yuz berdi: ${errorText}`);
+    }
+
+    const updatedUser = await res.json();
+    currentUser = updatedUser;
+    displayUserData();
+    closeEditModal();
+    alert('Profil muvaffaqiyatli yangilandi!');
+  } catch (error) {
+    alert(error.message);
+  }
+});
+        // Placeholder for delete modal function
+   
+
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!--
+  Kod manbai: @FrenchCoder
+  Instagram: @frenchcoder
+  Youtube: frenchcoder
+  Email: frenchcode.contact@gmail.com
+-->
+<html lang="uz">
+  <head>
+    <title>Instagram Kirish</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="./css/login.css">
+    <link rel="icon" type="image/png" href="images/instagram.ico" />
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&lang=en" />
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  </head>
+
+  <body>
+    <div class="main">
+      <img src="https://i.ibb.co/XJXqZP4/principal-image.png" height="575" width="375" class="main-image">
+
+      <div class="main-card-login">
+        <div class="login-card">
+          <div class="login-card-header-image">
+            <img src="https://i.ibb.co/chYt9nx/instagram-header.png" height="70" width="180">
+          </div>
+
+          <div class="login-card-form">
+            <input id="email-input" type="text" placeholder="Elektron pochta">
+            <input id="password-input" type="password" placeholder="Parol">
+            <button class="login-form-button">Kirish</button>
+
+            <div class="login-or">
+              <hr class="login-or-first-separation">
+              Yoki
+              <hr class="login-or-last-separation">
+            </div>
+
+            <div class="login-with-facebook">
+              <p>
+                <i class="fa fa-facebook-square" aria-hidden="true"></i>
+                Facebook orqali kirish
+              </p>
+            </div>
+
+            <div class="forgot-password">
+              <p>Parolni unutdingizmi?</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="login-card-footer">
+          Hali hisobingiz yo'qmi?
+          <span onclick="window.location.href = 'register.html'">Ro'yxatdan o'ting</span>
+        </div>
+
+        <div class="download-app">Ilova yuklang.</div>
+
+        <div class="download-app-buttons">
+          <img src='https://i.ibb.co/0MVzVqf/download-appstore.png' height="40" width="130">
+          <img src='https://i.ibb.co/hdsFFGB/download-playstore.png' height="40" width="130">
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ Yangilangan JS qismi -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const loginButton = document.querySelector('.login-form-button');
+
+       loginButton.addEventListener('click', async function () {
+  const email = document.getElementById('email-input').value.trim();
+  const password = document.getElementById('password-input').value.trim();
+
+  if (!email || !password) {
+    alert("Iltimos, elektron pochta va parolni to'liq kiriting.");
+    return;
+  }
+
+  try {
+    const res = await fetch('http://localhost:3000/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+      if (res.ok && data.token) {
+        localStorage.setItem('token', data.token);
+        console.log("token:", data.token);
+        window.location.href = 'menu.html';
+    } else {
+      alert(data.message || 'Kirishda xatolik mavjud.');
+    }
+  } catch (error) {
+    console.error('Tarmoq xatosi:', error);
+    alert('Server bilan ulanishda xatolik.');
+  }
+});
+
+      });
+    </script>
+  </body>
+</html>
+

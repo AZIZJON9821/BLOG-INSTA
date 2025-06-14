@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ro'yxatdan o'tish</title>
+  <link rel="stylesheet" href="./css/register.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .register-wrapper {
+      position: relative;
+      z-index: 1;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .register-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      padding: 40px 50px;
+      max-width: 420px;
+      width: 100%;
+      color: #333;
+    }
+
+    .register-card h2 {
+      font-weight: 600;
+      font-size: 2rem;
+      margin-bottom: 30px;
+      text-align: center;
+      color: #222;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    input, select {
+      padding: 12px 15px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 8px rgba(37, 99, 235, 0.5);
+    }
+
+    button {
+      width: 100%;
+      background: #2563eb;
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+      transform: scale(1.05);
+    }
+
+    .redirect-text {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    .redirect-text a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .redirect-text a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+
+  <div class="register-wrapper">
+    <div class="register-card">
+      <h2>Ro'yxatdan o'tish</h2>
+      <form id="register-form">
+        <div class="input-group">
+          <label for="name">Ism</label>
+          <input type="text" id="name" placeholder="Ismingizni kiriting" required />
+        </div>
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="Emailingizni kiriting" required />
+        </div>
+        <div class="input-group">
+          <label for="password">Parol</label>
+          <input type="password" id="password" placeholder="Parolingizni kiriting" required />
+        </div>
+        <div class="input-group">
+          <label for="role">Role</label>
+          <select id="role" required>
+            <option value="">Tanlang</option>
+            <option value="USER">USER</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+        </div>
+        <button type="submit">Ro'yxatdan o'tish</button>
+      </form>
+      <p class="redirect-text">
+        Hisobingiz bormi? <a href="login.html">Kirish sahifasiga o'tish</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Rang-barang nuqtalar (particles)
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+
+    // Rang-barang nuqta uchun klass
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = (Math.random() - 0.5) * 0.5;
+        this.speedY = (Math.random() - 0.5) * 0.5;
+        this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+          this.reset();
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    // Parvoz qiluvchi kometa uchun klass
+    class ShootingStar {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width * 0.8;
+        this.y = canvas.height + 10;
+        this.len = Math.random() * 80 + 80;
+        this.speed = Math.random() * 8 + 6;
+        this.angle = Math.PI / 4;
+        this.opacity = 1;
+        this.opacityChange = 0.01;
+      }
+      update() {
+        this.x += this.speed * Math.cos(this.angle);
+        this.y -= this.speed * Math.sin(this.angle);
+        this.opacity -= this.opacityChange;
+        if (this.opacity <= 0) {
+          this.reset();
+        }
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(this.x - this.len * Math.cos(this.angle), this.y + this.len * Math.sin(this.angle));
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    const particles = [];
+    const shootingStars = [];
+
+    // 100 ta rang-barang nuqta yaratish
+    for (let i = 0; i < 100; i++) {
+      particles.push(new Particle());
+    }
+
+    // Boshlanishda 3 ta kometa yaratish
+    for (let i = 0; i < 3; i++) {
+      shootingStars.push(new ShootingStar());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Rang-barang nuqtalarni yangilash va chizish
+      for (const p of particles) {
+        p.update();
+        p.draw();
+      }
+
+      // Kometalarni yangilash va chizish
+      for (const star of shootingStars) {
+        star.update();
+        star.draw();
+      }
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Har 1.5 sekundda yangi kometa qo'shish (maks 5 gacha)
+    setInterval(() => {
+      if (shootingStars.length < 5) {
+        shootingStars.push(new ShootingStar());
+      }
+    }, 1500);
+
+    window.addEventListener('resize', resize);
+
+    // Form yuborish
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const res = await fetch('http://localhost:3000/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById('name').value,
+          email: document.getElementById('email').value,
+          password: document.getElementById('password').value,
+          role: document.getElementById('role').value,
+        }),
+      });
+
+      if (res.ok) {
+        alert('Ro‘yxatdan muvaffaqiyatli o‘tildi!');
+        window.location.href = 'login.html';
+      } else {
+        const err = await res.json();
+        alert(err.message || 'Xatolik yuz berdi!');
+      }
+    });
+  </script>
+</body>
+</html>
