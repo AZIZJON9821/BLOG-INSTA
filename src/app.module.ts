@@ -13,6 +13,9 @@ import { PostSaveModule } from './post-save/post-save.module';
 import { ReportModule } from './report/report.module';
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),

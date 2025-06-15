@@ -267,7 +267,7 @@
     document.getElementById('register-form').addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const res = await fetch('http://localhost:3000/auth/register', {
+      const res = await fetch('http://185.191.141.96:3000/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

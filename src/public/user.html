@@ -362,7 +362,7 @@
                 document.getElementById('userEmail').textContent = currentUser.email;
                 document.getElementById('userImage').src =
                     currentUser.image
-                        ? `http://localhost:3000/uploads/${currentUser.image}`
+                        ? `http://185.191.141.96:3000/uploads/${currentUser.image}`
                         : 'https://via.placeholder.com/150';
 
                 document.getElementById('profileCard').style.display = 'flex';
@@ -383,7 +383,7 @@
             }
 
             try {
-                const res = await fetch(`http://localhost:3000/users/${userId}`, {
+                const res = await fetch(`http://185.191.141.96:3000/users/${userId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -420,7 +420,7 @@
                 const token = localStorage.getItem('token');
                 if (!token) return alert('Avval tizimga kiring!');
 
-                const res = await fetch(`http://localhost:3000/posts`, {
+                const res = await fetch(`http://185.191.141.96:3000/posts`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -445,7 +445,7 @@
                     <p>Content: ${post.content}</p>
                     <p>User ID: ${post.userId}</p>
                     <p>Post ID: ${post.id}</p>
-                    <img src="http://localhost:3000/uploads/${post.image}" alt="${post.title} alt=${post.content}" />
+                    <img src="http://185.191.141.96:3000/uploads/${post.image}" alt="${post.title} alt=${post.content}" />
                    
                   </div>
                 `).join('');
@@ -486,7 +486,7 @@
   }
 
   try {
-    const res = await fetch(`http://localhost:3000/users/${currentUser.id}`, {
+    const res = await fetch(`http://185.191.141.96:3000/users/${currentUser.id}`, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`

@@ -271,7 +271,7 @@
           return;
         }
 
-        const res = await fetch(`http://localhost:3000/posts`, {
+        const res = await fetch(`http://185.191.141.96:3000/posts`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -360,7 +360,7 @@ postElement.innerHTML = `
     post.user?.image
     ? `
     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-      <img src="http://localhost:3000/uploads/${post.user.image}" alt="${post.user.name}" 
+      <img src="http://185.191.141.96:3000/uploads/${post.user.image}" alt="${post.user.name}" 
       style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd;">
       <span style="
       font-weight: bold;
@@ -383,7 +383,7 @@ postElement.innerHTML = `
 
     ${
       post.image
-        ? `<img src="http://localhost:3000/uploads/${post.image}" alt="${post.title}" style="max-width: 100%; margin-top: 10px; border-radius: 8px;">`
+        ? `<img src="http://185.191.141.96:3000/uploads/${post.image}" alt="${post.title}" style="max-width: 100%; margin-top: 10px; border-radius: 8px;">`
         : ''
     }
   </div>
